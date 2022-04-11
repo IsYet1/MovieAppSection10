@@ -46,7 +46,11 @@ struct ShowFiltersScreen: View {
                 HStack {
                     Spacer()
                     Button("Search") {
-                        
+                        guard let lower = startDate.asDate(), let upper = endDate.asDate() else {
+                            return
+                        }
+                        movies = filterVm.filterMoviesByDateRange(lower: lower, upper: upper)
+                        presentationMode.wrappedValue.dismiss()
                        
                     }.buttonStyle(PlainButtonStyle())
                     Spacer()
