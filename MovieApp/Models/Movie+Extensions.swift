@@ -10,6 +10,32 @@ import CoreData
 
 extension Movie: BaseModel {
     
+    static func byDateRangeOrRating(lower: Date?, upper: Date?, minimumRating: Int? ) -> [Movie] {
+        var predicates: [NSPredicate] = []
+        if let lower = lower, let upper = upper {
+            
+            let dateRangePredicate = NSPredicate(format: "%K >= %@ AND %K <= %@",
+                                                 #keyPath(Movie.releaseDate),
+                                                 lower as NSDate,
+                                                 #keyPath(Movie.releaseDate),
+                                                 upper as NSDate )
+            predicates.append(dateRangePredicate)
+        } else {
+            if let minRating = minimumRating {
+                let minRatingPredicate  = NSPredicate(format: "%K >= %i", #keyPath(Movie.rating), minRating)
+            predicates.append(minRatingPredicate)
+            }
+        }
+        let request: NSFetchRequest<Movie> = Movie.fetchRequest()
+        request.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
+        do {
+            return try viewContext.fetch(request)
+        } catch {
+            print(error)
+            return []
+        }
+    }
+    
     static func byDateRange(lower: Date, upper: Date) -> [Movie] {
         let request: NSFetchRequest<Movie> = Movie.fetchRequest()
         request.predicate = NSPredicate(format: "%K >= %@ AND %K <= %@",

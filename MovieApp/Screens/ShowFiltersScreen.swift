@@ -32,7 +32,7 @@ struct ShowFiltersScreen: View {
                         if let releaseDate = releaseDate.asDate() {
                             movies = filterVm.filterMoviesByReleaseDate(releaseDate: releaseDate)
                         }
-                       
+                        
                         presentationMode.wrappedValue.dismiss()
                         
                     }.buttonStyle(PlainButtonStyle())
@@ -51,7 +51,7 @@ struct ShowFiltersScreen: View {
                         }
                         movies = filterVm.filterMoviesByDateRange(lower: lower, upper: upper)
                         presentationMode.wrappedValue.dismiss()
-                       
+                        
                     }.buttonStyle(PlainButtonStyle())
                     Spacer()
                 }
@@ -64,8 +64,11 @@ struct ShowFiltersScreen: View {
                 HStack {
                     Spacer()
                     Button("Search") {
-                        
-                       
+                        let lowerBound = startDate.asDate()
+                        let upperBound = endDate.asDate()
+                        let minRating = Int(minimumRating)
+                        movies = filterVm.filterMoviesByDateRangeOrMinRating(lower: lowerBound, upper: upperBound, minRating: minRating)
+                        presentationMode.wrappedValue.dismiss()
                     }.buttonStyle(PlainButtonStyle())
                     Spacer()
                 }
@@ -77,7 +80,7 @@ struct ShowFiltersScreen: View {
                     Spacer()
                     Button("Search") {
                         
-                       
+                        
                         
                     }.buttonStyle(PlainButtonStyle())
                     Spacer()
@@ -90,7 +93,7 @@ struct ShowFiltersScreen: View {
                     Spacer()
                     Button("Search") {
                         
-                       
+                        
                         
                     }.buttonStyle(PlainButtonStyle())
                     Spacer()
