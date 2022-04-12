@@ -78,7 +78,7 @@ extension Movie: BaseModel {
     static func byActorName(name: String) -> [Movie] {
         
         let request: NSFetchRequest<Movie> = Movie.fetchRequest()
-        request.predicate = NSPredicate(format: "actors.name CONTAINS %@", name)
+        request.predicate = NSPredicate(format: "%K.%K CONTAINS %@", #keyPath(Movie.actors), #keyPath(Actor.name), name)
         
         do {
             return try viewContext.fetch(request)
