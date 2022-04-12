@@ -16,7 +16,9 @@ class FiltersViewModel: ObservableObject {
     }
     func filterMoviesByDateRangeOrMinRating(lower: Date?, upper: Date?, minRating: Int?) -> [MovieViewModel] {
         return Movie.byDateRangeOrRating(lower: lower, upper: upper, minimumRating: minRating).map(MovieViewModel.init)
-        
+    }
+    func filterMoviesByTitle(title: String) -> [MovieViewModel] {
+        return Movie.byMovieTitle(title: title).map(MovieViewModel.init)
     }
 }
 
