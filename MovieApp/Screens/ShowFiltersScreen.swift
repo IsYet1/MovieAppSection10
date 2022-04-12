@@ -15,6 +15,7 @@ struct ShowFiltersScreen: View {
     @State private var minimumRating: String = ""
     @State private var movieTitle: String = ""
     @State private var actorName: String = ""
+    @State private var minReviewCount: String = ""
     
     @Binding var movies: [MovieViewModel]
     
@@ -98,6 +99,20 @@ struct ShowFiltersScreen: View {
                 }
             }
             
+            Section(header: Text("Search by Review Count")) {
+                TextField("Enter Review Count", text: $minReviewCount)
+                HStack {
+                    Spacer()
+                    Button("Search") {
+                        if !minReviewCount.isEmpty {
+                            movies = filterVm.filterMoviesByMinReviewCount(minReviewCount: Int(minReviewCount) ?? 0)
+                            presentationMode.wrappedValue.dismiss()
+                        }
+                        presentationMode.wrappedValue.dismiss()
+                    }.buttonStyle(PlainButtonStyle())
+                    Spacer()
+                }
+            }
         }
         .navigationTitle("Filters")
         .embedInNavigationView()

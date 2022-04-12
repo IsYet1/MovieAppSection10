@@ -10,6 +10,18 @@ import CoreData
 
 extension Movie: BaseModel {
     
+    static func byMinReviewCount(minReviewCount: Int = 1) -> [Movie] {
+        let request: NSFetchRequest<Movie> = Movie.fetchRequest()
+//        request.predicate = NSPredicate(format: "reviews.@count >= %i", minReviewCount)
+        request.predicate = NSPredicate(format: "%K.@count >= %i", #keyPath(Movie.reviews), minReviewCount)
+        do {
+            return try viewContext.fetch(request)
+        } catch {
+            print(error)
+            return []
+        }
+    }
+    
     static func byMovieTitle(title: String) -> [Movie] {
         let request: NSFetchRequest<Movie> = Movie.fetchRequest()
         // Begins with. Case insensitive. Dialect insensitive.
