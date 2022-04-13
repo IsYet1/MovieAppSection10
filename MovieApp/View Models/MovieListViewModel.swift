@@ -50,7 +50,7 @@ enum SortOptions: String, CaseIterable {
     }
 }
 
-class MovieListViewModel: ObservableObject {
+class MovieListViewModel: NSObject, ObservableObject {
     
     @Published var movies = [MovieViewModel]()
     @Published var filterEnabled: Bool = false
@@ -59,10 +59,14 @@ class MovieListViewModel: ObservableObject {
     @Published var selectedSortOption: SortOptions = .title
     @Published var selectedSortDirection: SortDirection = .ascending
     
+    private var fetchedResultsController: NSFetchedResultsController<Movie>!
+    
     func sort() {
         // Do this here and not the movie model because:
         let request: NSFetchRequest<Movie> = Movie.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(key: selectedSortOption.rawValue, ascending: selectedSortDirection.value)]
+        // Multiple sort parameters Example only.
+//        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true), NSSortDescriptor(key: "rating", ascending: false)]
         let fetchResultController: NSFetchedResultsController<Movie> = NSFetchedResultsController(fetchRequest: request, managedObjectContext: CoreDataManager.shared.viewContext, sectionNameKeyPath: nil, cacheName: nil)
         
         try? fetchResultController.performFetch()
@@ -80,8 +84,24 @@ class MovieListViewModel: ObservableObject {
     }
     
     func getAllMovies() {
+        let request: NSFetchRequest<Movie> = Movie.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+        fetchedResultsController = NSFetchedResultsController(fetchRequest: request, managedObjectContext: CoreDataManager.shared.viewContext, sectionNameKeyPath: nil, cacheName: nil)
+        fetchedResultsController.delegate = self
+        
+        try? fetchedResultsController.performFetch()
+        
         DispatchQueue.main.async {
-            self.movies = Movie.all().map(MovieViewModel.init)
+            self.movies = (self.fetchedResultsController.fetchedObjects ?? []).map(MovieViewModel.init)
+        }
+    }
+}
+
+// Enable conformance to the NSFetchedResultsControllerDelegat
+extension MovieListViewModel: NSFetchedResultsControllerDelegate  {
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        DispatchQueue.main.async {
+            self.movies = (controller.fetchedObjects as? [Movie] ?? []).map(MovieViewModel.init)
         }
     }
 }
