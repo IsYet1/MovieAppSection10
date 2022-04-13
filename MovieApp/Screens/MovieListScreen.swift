@@ -58,27 +58,52 @@ struct MovieListScreen: View {
                 
             }.listStyle(PlainListStyle())
             
-            .navigationTitle("Movies")
-            .navigationBarItems(trailing: Button("Add Movie") {
-                activeSheet = .addMovie
-            })
-            .sheet(item: $activeSheet, onDismiss: {
-                if(!filterApplied) {
-                    movieListVM.getAllMovies()
-                }
-            }, content: { item in
-                switch item {
+                .navigationTitle("Movies")
+                .navigationBarItems(trailing: Button("Add Movie") {
+                    activeSheet = .addMovie
+                })
+                .sheet(item: $activeSheet, onDismiss: {
+                    if(!filterApplied) {
+                        movieListVM.getAllMovies()
+                    }
+                }, content: { item in
+                    switch item {
                     case .addMovie:
                         AddMovieScreen()
                     case .showFilters:
-                    ShowFiltersScreen(movies: $movieListVM.movies)
+                        ShowFiltersScreen(movies: $movieListVM.movies)
+                    }
+                })
+                .onAppear(perform: {
+                    UITableView.appearance().separatorStyle = .none
+                    UITableView.appearance().separatorColor = .clear
+                    movieListVM.getAllMovies()
+                })
+            GeometryReader { geometry in
+                VStack {
+                    HStack {
+                        Spacer()
+                        Picker("Select title", selection: $movieListVM.selectedSortOption) {
+                            ForEach(SortOptions.allCases, id: \.self) {
+                                Text($0.displayText)
+                            }
+                        }.frame(width: geometry.size.width/3, height: 100)
+                            .clipped()
+                        
+                        Picker("Sort Direction", selection: $movieListVM.selectedSortDirection) {
+                            ForEach(SortDirection.allCases, id: \.self) {
+                                Text($0.displayText)
+                            }
+                        }.frame(width: geometry.size.width/3, height: 100)
+                            .clipped()
+                        
+                        Spacer()
+                    }
+                    Button("Done") {
+                        
+                    }
                 }
-            })
-            .onAppear(perform: {
-                UITableView.appearance().separatorStyle = .none
-                UITableView.appearance().separatorColor = .clear
-                movieListVM.getAllMovies()
-        })
+            }
         }.embedInNavigationView()
     }
 }

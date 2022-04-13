@@ -8,9 +8,55 @@
 import Foundation
 import CoreData
 
+enum SortDirection: CaseIterable {
+    
+    case ascending
+    case descending
+    
+    var value: Bool {
+        switch self {
+        case .ascending:
+            return true
+        case .descending:
+            return false
+        }
+    }
+    
+    var displayText: String {
+        switch self {
+        case .ascending:
+            return "Ascending"
+        case .descending:
+            return "Descending"
+        }
+    }
+}
+
+enum SortOptions: String, CaseIterable {
+    
+    case title
+    case releaseDate
+    case rating
+    
+    var displayText: String {
+        switch self {
+        case .title:
+            return "Title"
+        case .releaseDate:
+            return "Release Date"
+        case .rating:
+            return "Rating"
+        }
+    }
+}
+
 class MovieListViewModel: ObservableObject {
     
     @Published var movies = [MovieViewModel]()
+    @Published var filterEnabled: Bool = false
+    
+    @Published var selectedSortOption: SortOptions = .title
+    @Published var selectedSortDirection: SortDirection = .ascending
     
     func deleteMovie(movie: MovieViewModel) {
         let movie: Movie? = Movie.byId(id: movie.movieId)
