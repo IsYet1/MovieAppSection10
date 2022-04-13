@@ -39,6 +39,9 @@ struct MovieListScreen: View {
                 Button("Reset") {
                     movieListVM.getAllMovies()
                 }.padding()
+                Button("Sort") {
+                    movieListVM.sortEnabled = true
+                }
                 Spacer()
                 Button("Filter") {
                     filterApplied = true
@@ -79,28 +82,32 @@ struct MovieListScreen: View {
                     UITableView.appearance().separatorColor = .clear
                     movieListVM.getAllMovies()
                 })
-            GeometryReader { geometry in
-                VStack {
-                    HStack {
-                        Spacer()
-                        Picker("Select title", selection: $movieListVM.selectedSortOption) {
-                            ForEach(SortOptions.allCases, id: \.self) {
-                                Text($0.displayText)
-                            }
-                        }.frame(width: geometry.size.width/3, height: 100)
-                            .clipped()
-                        
-                        Picker("Sort Direction", selection: $movieListVM.selectedSortDirection) {
-                            ForEach(SortDirection.allCases, id: \.self) {
-                                Text($0.displayText)
-                            }
-                        }.frame(width: geometry.size.width/3, height: 100)
-                            .clipped()
-                        
-                        Spacer()
-                    }
-                    Button("Done") {
-                        
+            if (movieListVM.sortEnabled) {
+                GeometryReader { geometry in
+                    VStack {
+                        HStack {
+                            Spacer()
+                            Picker("Select title", selection: $movieListVM.selectedSortOption) {
+                                ForEach(SortOptions.allCases, id: \.self) {
+                                    Text($0.displayText)
+                                }
+                            }.frame(width: geometry.size.width/3, height: 100)
+                                .clipped()
+                            
+                            Picker("Sort Direction", selection: $movieListVM.selectedSortDirection) {
+                                ForEach(SortDirection.allCases, id: \.self) {
+                                    Text($0.displayText)
+                                }
+                            }.frame(width: geometry.size.width/3, height: 100)
+                                .clipped()
+                            
+                            Spacer()
+                        }
+                        Button("Done") {
+                            movieListVM.sortEnabled = false
+                            // Perform the sort
+                            movieListVM.sort()
+                        }
                     }
                 }
             }
